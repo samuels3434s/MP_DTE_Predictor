@@ -68,7 +68,6 @@ const elements = {
     domicileSelect: document.getElementById('select-domicile'),
     categorySelect: document.getElementById('select-category'),
     genderSelect: document.getElementById('select-gender'),
-    examSelect: document.getElementById('select-exam'),
     tfwCheck: document.getElementById('check-tfw'),
     
     // Rounds Checkboxes
@@ -272,15 +271,14 @@ function handleBackToResults() {
 // --- Update Meta Information Text ---
 function updateResultsMetaText() {
     const rank = parseInt(elements.rankInput.value).toLocaleString('en-IN');
-    const exam = elements.examSelect.value === 'JEE' ? 'JEE CRL' : '12th Marks';
     
     if (elements.domicileSelect.value === 'AI') {
-        elements.resultsMetaDesc.textContent = `Rank: ${rank} (${exam}) | All India Candidate`;
+        elements.resultsMetaDesc.textContent = `Rank: ${rank} | All India Candidate`;
     } else {
         const cat = elements.categorySelect.value;
         const gen = elements.genderSelect.value === 'M' ? 'Male' : 'Female';
         const tfw = elements.tfwCheck.checked ? ' + TFW' : '';
-        elements.resultsMetaDesc.textContent = `Rank: ${rank} (${exam}) | MP Domicile | ${cat} | ${gen}${tfw}`;
+        elements.resultsMetaDesc.textContent = `Rank: ${rank} | MP Domicile | ${cat} | ${gen}${tfw}`;
     }
 }
 
@@ -315,7 +313,6 @@ function runFilterAndRender() {
     const domicile = elements.domicileSelect.value;
     const category = elements.categorySelect.value;
     const gender = elements.genderSelect.value;
-    const exam = elements.examSelect.value;
     const showTfw = elements.tfwCheck.checked;
     
     // Counselling Rounds
@@ -337,8 +334,8 @@ function runFilterAndRender() {
 
     // Filter the records array
     filteredRecords = CUTOFF_DATA.filter(record => {
-        // 1. Exam Type Match
-        if (record.exam !== exam) return false;
+        // 1. Exam Type Match (Strictly JEE Main now)
+        if (record.exam !== 'JEE') return false;
         
         // 2. Counselling Round Match
         if (!rounds.includes(record.round)) return false;
@@ -625,7 +622,6 @@ function createResultCardHtml(record, rank) {
                 <div class="card-meta">
                     <span><i class="fa-solid fa-circle-nodes"></i> ${escapeHtml(record.round)}</span>
                     <span><i class="fa-solid fa-users"></i> ${escapeHtml(categoryMeta)}</span>
-                    <span><i class="fa-solid fa-clipboard-question"></i> ${record.exam === 'JEE' ? 'JEE Main Rank' : 'Qualifying 12th Board'}</span>
                     ${remarksMeta}
                 </div>
             </div>
