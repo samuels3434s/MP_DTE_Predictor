@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP DTE 2025 B.Tech Cutoff Predictor</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="index.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header (Visible on both pages) -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap header-icon"></i>
+                <h1>MP DTE <span>Predictor 2025</span></h1>
+            </div>
+            <p class="subtitle">Predict your engineering admission chances in Madhya Pradesh based on 2025 cutoff ranks.</p>
+        </header>
+
+        <!-- Screen 1: Candidate Information Form -->
+        <section id="screen-form" class="screen-view active-screen">
+            <div class="form-card card-panel">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-user-gear"></i> Candidate Details</h2>
+                    <p>Enter your rank and reservation details to calculate eligibility.</p>
+                </div>
+                
+                <form id="predictor-form" onsubmit="return false;">
+                    <!-- Rank Input -->
+                    <div class="form-group">
+                        <label for="input-rank"><i class="fa-solid fa-trophy"></i> Your Rank</label>
+                        <input type="number" id="input-rank" class="form-control" placeholder="e.g. 150000" min="1" required>
+                        <span class="field-hint">Enter your JEE Main CRL (All India Rank) or Qualifying 12th Rank.</span>
+                    </div>
+
+                    <!-- Grid for Form fields -->
+                    <div class="form-grid">
+                        <!-- Domicile Selector -->
+                        <div class="form-group">
+                            <label for="select-domicile"><i class="fa-solid fa-map-location-dot"></i> MP Domicile?</label>
+                            <select id="select-domicile" class="form-control">
+                                <option value="MP" selected>Yes (Madhya Pradesh Resident)</option>
+                                <option value="AI">No (All India Quota Only)</option>
+                            </select>
+                        </div>
+
+                        <!-- Category Selector -->
+                        <div class="form-group" id="category-group">
+                            <label for="select-category"><i class="fa-solid fa-users"></i> Category</label>
+                            <select id="select-category" class="form-control">
+                                <option value="UR" selected>UR (General / Unreserved)</option>
+                                <option value="EWS">EWS (Economically Weaker Section)</option>
+                                <option value="OBC">OBC (Other Backward Classes)</option>
+                                <option value="SC">SC (Scheduled Caste)</option>
+                                <option value="ST">ST (Scheduled Tribe)</option>
+                            </select>
+                        </div>
+
+                        <!-- Gender Selector -->
+                        <div class="form-group" id="gender-group">
+                            <label for="select-gender"><i class="fa-solid fa-venus-mars"></i> Gender</label>
+                            <select id="select-gender" class="form-control">
+                                <option value="M" selected>Male / General Pool (Open)</option>
+                                <option value="F">Female</option>
+                            </select>
+                        </div>
+
+                        <!-- Exam Type -->
+                        <div class="form-group">
+                            <label for="select-exam"><i class="fa-solid fa-clipboard-question"></i> Admission Exam</label>
+                            <select id="select-exam" class="form-control">
+                                <option value="JEE" selected>JEE Main (Entrance)</option>
+                                <option value="QUALIFYING">12th Board Marks (Qualifying)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TFW Seats Checkbox -->
+                    <div class="form-group checkbox-group" id="tfw-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="check-tfw">
+                            <span class="checkmark"></span>
+                            Apply for Tuition Fee Waiver (TFW)
+                        </label>
+                        <span class="field-hint">Requires MP Domicile & Income &lt; 8 LPA. Labeled as FW/OP.</span>
+                    </div>
+
+                    <hr class="divider">
+
+                    <!-- Counselling Rounds Checkboxes -->
+                    <div class="form-group">
+                        <label class="group-label"><i class="fa-solid fa-circle-nodes"></i> Counselling Rounds to Search</label>
+                        <div class="checkbox-row">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="check-r1" checked>
+                                <span class="checkmark"></span>
+                                Round 1
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="check-r1-up" checked>
+                                <span class="checkmark"></span>
+                                Round 1 Upgrade
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="check-r2" checked>
+                                <span class="checkmark"></span>
+                                Round 2
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="check-r3" checked>
+                                <span class="checkmark"></span>
+                                Internal Change
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="btn-submit" class="btn btn-primary btn-large">
+                        <i class="fa-solid fa-magnifying-glass"></i> Find Eligible College Options
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Screen 2: Prediction Results Dashboard -->
+        <section id="screen-results" class="screen-view hidden-screen">
+            <div class="results-dashboard">
+                <!-- Navigation & Action Toolbar -->
+                <div class="dashboard-nav-card card-panel">
+                    <button id="btn-back" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Edit Details
+                    </button>
+                    <div class="nav-title-group">
+                        <h2>Your Admission Options</h2>
+                        <p id="results-meta-desc">Rank: 000 | UR | Male | MP Domicile</p>
+                    </div>
+                    <div class="nav-action-buttons">
+                        <button id="btn-export" class="btn btn-secondary">
+                            <i class="fa-solid fa-file-excel"></i> Export Results
+                        </button>
+                        <button id="btn-show-strategy" class="btn btn-primary">
+                            <i class="fa-solid fa-list-check"></i> Choice Filling Strategy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Overview Row -->
+                <section class="stats-row">
+                    <div class="stat-card card-panel stat-card-blue">
+                        <div class="stat-icon"><i class="fa-solid fa-building-columns"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Options</span>
+                            <span id="stat-count" class="stat-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card card-panel stat-card-green">
+                        <div class="stat-icon"><i class="fa-solid fa-thumbs-up"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">High Chance (🟢)</span>
+                            <span id="stat-high" class="stat-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card card-panel stat-card-yellow">
+                        <div class="stat-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Borderline (🟡)</span>
+                            <span id="stat-borderline" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Search & Filters Toolbar -->
+                <section class="toolbar-card card-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="input-search" placeholder="Search by college name, city, or branch (e.g. SGSITS, CSE)...">
+                    </div>
+                    
+                    <div class="toolbar-controls">
+                        <!-- Sort By -->
+                        <div class="control-group">
+                            <label for="select-sort">Sort By</label>
+                            <select id="select-sort" class="select-sm">
+                                <option value="cl_rank_asc" selected>Closing Rank (Low to High)</option>
+                                <option value="cl_rank_desc">Closing Rank (High to Low)</option>
+                                <option value="college_asc">College Name (A-Z)</option>
+                                <option value="branch_asc">Branch Code (A-Z)</option>
+                            </select>
+                        </div>
+
+                        <!-- Chance Filter -->
+                        <div class="control-group">
+                            <label for="select-chance">Chance Filter</label>
+                            <select id="select-chance" class="select-sm">
+                                <option value="all" selected>All Eligible Seats</option>
+                                <option value="high">🟢 High Chance Only</option>
+                                <option value="borderline">🟡 Borderline Only</option>
+                                <option value="above_rank">Include Ranks Below Yours (Low Chance 🔴)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Branch Filter Pills -->
+                <section class="branch-filters card-panel">
+                    <span class="filter-label">Quick Branch Filter:</span>
+                    <div class="pills-container" id="branch-pills">
+                        <button class="pill active" data-branch="ALL">All Branches</button>
+                        <button class="pill" data-branch="CSE">Computer Science (CSE)</button>
+                        <button class="pill" data-branch="IT">Information Technology (IT)</button>
+                        <button class="pill" data-branch="EC">Electronics (EC/ET)</button>
+                        <button class="pill" data-branch="EE">Electrical (EE/EX)</button>
+                        <button class="pill" data-branch="MECH">Mechanical (ME)</button>
+                        <button class="pill" data-branch="CE">Civil (CE)</button>
+                    </div>
+                </section>
+
+                <!-- Results Grid -->
+                <section class="results-container">
+                    <!-- Loading Indicator -->
+                    <div id="loading" class="loading-state card-panel hidden">
+                        <i class="fa-solid fa-circle-notch fa-spin spinner"></i>
+                        <p>Filtering counselling cutoff records...</p>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="empty-state-card card-panel">
+                        <i class="fa-solid fa-graduation-cap empty-icon"></i>
+                        <h3>Enter your Rank to Get Started</h3>
+                        <p>Adjust the filters on the left panel and enter your rank to calculate your engineering college options in MP.</p>
+                    </div>
+
+                    <!-- Results List -->
+                    <div id="results-grid" class="results-grid">
+                        <!-- Cards injected dynamically via JS -->
+                    </div>
+                </section>
+
+                <!-- Pagination/Load More -->
+                <div class="pagination-container" id="pagination-panel">
+                    <span id="page-info" class="page-info">Showing 0 of 0 options</span>
+                    <button id="btn-load-more" class="btn btn-primary hidden">Load More Options</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 3: Choice Filling Strategy Dashboard -->
+        <section id="screen-strategy" class="screen-view hidden-screen">
+            <div class="results-dashboard">
+                <!-- Navigation Toolbar -->
+                <div class="dashboard-nav-card card-panel">
+                    <button id="btn-back-to-results" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Options
+                    </button>
+                    <div class="nav-title-group">
+                        <h2>Choice Filling Strategy</h2>
+                        <p id="strategy-meta-desc">Rank: 000 | Recommended Priority Order</p>
+                    </div>
+                    <button id="btn-export-strategy" class="btn btn-success">
+                        <i class="fa-solid fa-file-csv"></i> Export Preference List
+                    </button>
+                </div>
+
+                <!-- Strategy Guide Info Card -->
+                <div class="card-panel guide-box">
+                    <h3><i class="fa-solid fa-circle-info"></i> How to Use This Choice Filling Order</h3>
+                    <p>This preference list sorts your eligible options in a sequence that maximizes your chances of securing the best possible college seat. During choice filling in the MP DTE portal, you should arrange your choices in this exact order:</p>
+                    <ul>
+                        <li><strong>1. Dream Choices (Top)</strong>: Ambitious options with borderline/yellow chances at elite colleges (e.g. SGSITS, IET DAVV). Placing them at the top is risk-free; if you don't get them, the counselor moves to your target options.</li>
+                        <li><strong>2. Target Choices (Middle)</strong>: Realistic options with high/green chances. These match your rank perfectly and form the core of your choice list.</li>
+                        <li><strong>3. Safe Choices (Bottom)</strong>: Extremely safe backup options with very high chances. These act as fallbacks to ensure you do not end up without a seat at the end of the round.</li>
+                    </ul>
+                </div>
+
+                <!-- Table Card -->
+                <div class="card-panel strategy-table-card">
+                    <div class="table-container">
+                        <table class="strategy-table">
+                            <thead>
+                                <tr>
+                                    <th>Priority</th>
+                                    <th>College Name</th>
+                                    <th>Branch</th>
+                                    <th>Exam</th>
+                                    <th>Quota</th>
+                                    <th>2025 Cutoff</th>
+                                    <th>Admission Chance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="strategy-table-body">
+                                <!-- Dynamic choice filling rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p class="copyright">© 2026 MP DTE Counselling College Predictor. All Rights Reserved.</p>
+                <p class="social-link">
+                    Follow on Instagram: <a href="https://instagram.com/pxl_.dust" target="_blank" class="instagram-handle"><i class="fa-brands fa-instagram"></i> @pxl_.dust</a>
+                </p>
+                <p class="disclaimer">
+                    <strong>Disclaimer:</strong> This tool is compiled from official 2025 MP DTE cutoff databases for reference. Actual admission cutoffs for 2026 depend on exam difficulty, registration count, and preference selections.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
