@@ -69,6 +69,7 @@ const elements = {
     categorySelect: document.getElementById('select-category'),
     genderSelect: document.getElementById('select-gender'),
     tfwCheck: document.getElementById('check-tfw'),
+    typeFormSelect: document.getElementById('select-type-form'),
     
     // Rounds Checkboxes
     checkR1: document.getElementById('check-r1'),
@@ -91,6 +92,7 @@ const elements = {
     searchInput: document.getElementById('input-search'),
     sortSelect: document.getElementById('select-sort'),
     chanceSelect: document.getElementById('select-chance'),
+    typeResultsSelect: document.getElementById('select-type-results'),
     
     // Layout groups
     categoryGroup: document.getElementById('category-group'),
@@ -156,7 +158,7 @@ function init() {
 
     // Immediate filters inside Screen 2 (runs instant predictions on list options)
     const toolbarInputs = [
-        elements.sortSelect, elements.chanceSelect
+        elements.sortSelect, elements.chanceSelect, elements.typeResultsSelect
     ];
     toolbarInputs.forEach(el => {
         if (el) el.addEventListener('change', runFilterAndRender);
@@ -208,6 +210,11 @@ function handleFormSubmit(e) {
     if (!rankValue || isNaN(rankValue) || parseInt(rankValue) <= 0) {
         alert("Please enter a valid rank.");
         return;
+    }
+
+    // Sync College Type dropdown to results toolbar
+    if (elements.typeFormSelect && elements.typeResultsSelect) {
+        elements.typeResultsSelect.value = elements.typeFormSelect.value;
     }
 
     // Run matching engine and populate list
@@ -271,14 +278,20 @@ function handleBackToResults() {
 // --- Update Meta Information Text ---
 function updateResultsMetaText() {
     const rank = parseInt(elements.rankInput.value).toLocaleString('en-IN');
+    const typeVal = elements.typeFormSelect.value;
+    let typeText = '';
+    if (typeVal === 'GOVT') typeText = ' | Govt Autonomous Only';
+    else if (typeVal === 'AIDED') typeText = ' | Govt Aided Only';
+    else if (typeVal === 'SFI') typeText = ' | S.F.I. Only';
+    else if (typeVal === 'PRIVATE') typeText = ' | Private Only';
     
     if (elements.domicileSelect.value === 'AI') {
-        elements.resultsMetaDesc.textContent = `Rank: ${rank} | All India Candidate`;
+        elements.resultsMetaDesc.textContent = `Rank: ${rank}${typeText} | All India Candidate`;
     } else {
         const cat = elements.categorySelect.value;
         const gen = elements.genderSelect.value === 'M' ? 'Male' : 'Female';
         const tfw = elements.tfwCheck.checked ? ' + TFW' : '';
-        elements.resultsMetaDesc.textContent = `Rank: ${rank} | MP Domicile | ${cat} | ${gen}${tfw}`;
+        elements.resultsMetaDesc.textContent = `Rank: ${rank}${typeText} | MP Domicile | ${cat} | ${gen}${tfw}`;
     }
 }
 
@@ -314,6 +327,7 @@ function runFilterAndRender() {
     const category = elements.categorySelect.value;
     const gender = elements.genderSelect.value;
     const showTfw = elements.tfwCheck.checked;
+    const collegeType = elements.typeResultsSelect.value;
     
     // Counselling Rounds
     const rounds = [];
@@ -336,6 +350,15 @@ function runFilterAndRender() {
     filteredRecords = CUTOFF_DATA.filter(record => {
         // 1. Exam Type Match (Strictly JEE Main now)
         if (record.exam !== 'JEE') return false;
+        
+        // 1b. College Type Match
+        if (collegeType !== 'ALL') {
+            const type = (record.inst_type || "").toUpperCase().replace(/\s+/g, "");
+            if (collegeType === 'GOVT' && type !== 'GOVT') return false;
+            if (collegeType === 'AIDED' && type !== 'AIDED') return false;
+            if (collegeType === 'SFI' && !type.includes('S.F.I.') && !type.includes('SFI')) return false;
+            if (collegeType === 'PRIVATE' && !type.includes('PRIVATE')) return false;
+        }
         
         // 2. Counselling Round Match
         if (!rounds.includes(record.round)) return false;
